@@ -1,0 +1,6 @@
+For start i will try with lumi calculation work area.
+cmsrel CMSSW_5_3_9 cd CMSSW_5_3_9 cmsenv git clone https://github.com/cms-sw/RecoLuminosity-LumiDB.git $CMSSW_BASE/src/RecoLuminosity/LumiDB cd $CMSSW_BASE/src/RecoLuminosity/LumiDB git checkout V04-02-10 scramv1 b cmsenv
+
+or alternatively
+
+cd CMSSW_5_3_9/src mkdir -p RecoLuminosity curl https://codeload.github.com/cms-sw/RecoLuminosity-LumiDB/tar.gz/V04-02-10 | tar xzv -C RecoLuminosity mv RecoLuminosity/RecoLuminosity-LumiDB-* RecoLuminosity/LumiDB cd RecoLuminosity/LumiDB scramv1 b cmsenv
