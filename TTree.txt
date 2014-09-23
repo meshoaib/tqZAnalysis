@@ -1,0 +1,10 @@
+TTree *tree_;
+MiniEvent_t ev_;
+ev_.l_pt=mu.pt();
+ev_.l_eta=mu.eta();
+ev_.l_phi=mu.phi();
+ev_.l_chargedHadronIso=mu.chargedHadronIso();
+ev_.l_neutralHadronIso=mu.neutralHadronIso();
+tree_->Fill();
+tree_ = fs->make<TTree>("AnaTree", "AnaTree");
+createMiniEventTree(tree_,ev_);
