@@ -1,0 +1,26 @@
+You need working gitHub account 
+
+See twiki for more details (if you do not have ssh key or account and other details )
+
+https://help.github.com/articles/generating-ssh-keys
+http://git-scm.com/book/en/Git-Basics-Working-with-Remotes
+https://help.github.com/articles/fork-a-repo
+
+git username: meshoaib
+git password: xyz
+git pass-phrase for rd_rsa: xyz
+
+How to commit changes and push or pull 
+
+ssh -Y username@lxplus.cern.ch
+cd   working directory ( e.g /afs/cern.ch/work/m/meshoaib/analysis/CMSSW_5_3_15/src/MyAnalysis/TbZ)
+
+git init
+git add XYZ.cc/cpp/etc
+git commit -m "first commit"
+
+git remote add origin https://github.com/meshoaib/usercode.git
+
+git pull origin master (before push we need to pull remote directory)
+
+git push -u origin master
