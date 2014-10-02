@@ -53,7 +53,7 @@ TbzMuonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
      // pick the first (i.e. highest sum pt) vertex                     
      if (!vertices.isValid())
       {
-       std::cout<<"Didja hear the one about the empty vertex collection?\n"   ;
+       std::cout<<"In tight-> You hear the one about the empty vertex collection?\n"   ;
        iEvent.put(ptr)                                                        ;
        return                                                                 ;
       }
@@ -173,15 +173,15 @@ TbzMuonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        // Proposed Configuration (DeltaBeta Correction) at cone of 0.4: 
        Iso = (ChargedHadronPt +  max(0. , sumNeutralHadronEt + sumPhotonEt - 0.5*sumPUPt))/myMuon->pt()  ; 
        
-       cout<< "Muon_Isolation: "<< Iso <<endl     ;
+       cout<< "tight_Muon_Isolation: "<< Iso <<endl     ;
        if(Iso > 0.12) continue                    ;
-       cout<<"Muon_Iso_afterCut: "<< Iso <<endl   ;
+       cout<<"tight_Muon_Iso_afterCut: "<< Iso <<endl   ;
        
        isTightMuon        =   tbzHelper.isTightMuon (  myMuon,  theVertex )            ;
        isLooseMuon        =   tbzHelper.isLooseMuon (  myMuon,  theVertex )            ; 
        
        if( nmu == 0 && muon->pt() > 20.) passLeadingPt = true                          ;
-       cout << "Leading Muon True: " << passLeadingPt<<endl                            ;
+       cout << "tight_Leading_Muon_True: " << passLeadingPt<<endl                            ;
        
        if( nmu == 0 && passLeadingPt ) pT_1st_LeadingMuon->Fill(muon->pt())            ;
        if( nmu == 1 && muon->pt()>= muonPtCut_ ) pT_2nd_LeadingMuon->Fill(muon->pt())  ;
@@ -272,11 +272,11 @@ TbzMuonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
              
              //--- number of tight muons ------
              nmu++                                                     ;       
-             cout <<"numberMuon: " << nmu << endl                      ;
+             cout <<"tight_numberMuon: " << nmu << endl                      ;
              Number_of_tightMuons->Fill(nmu)                           ;
              // //--------------------------------
              
-             cout<<"isTight muon "<< isTightMuon<<endl                 ;
+             cout<<"isTight_muon_boolTrue:  "<< isTightMuon<<endl                 ;
              wmuons->push_back(*muon)                                  ;
              if( wmuons->size()<=0.)                  continue         ;
              tt++                                                      ;                   
@@ -295,7 +295,7 @@ TbzMuonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        if(wmuons->size() >3 )m_muonCutFlow->Fill(10)                  ; 
        
        //==========================================================
-       cout<<"size of selected muons : "<<wmuons->size()<<endl        ;
+       cout<<"size of selected tight muons : "<<wmuons->size()<<endl        ;
        iEvent.put(ptr)                                                ;
        //==========================================================
 }
@@ -350,7 +350,7 @@ TbzMuonProducer::endJob()
     {          
     std::cout<< "i : "<< i<<" ......... "<<cuts.at(i)<<"......................" << m_muonCutFlow->GetBinContent(i+1)<<std::endl;
     }
-  std::cout<< ".........................End of muon CUT Flow in PRODUCER......................" << std::endl;
+  std::cout<< ".........................End of tight muon CUT Flow in PRODUCER......................" << std::endl;
 }
 
 // ------------ method called when starting to processes a run  ------------

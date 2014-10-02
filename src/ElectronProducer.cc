@@ -98,7 +98,7 @@ ElectronProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         //----                                                                            
         //vector<reco::Muon> muon_preSel_producer                                         ;    
         //----                                                                            
-        std::cout<<"size of electron without cuts "<< els_h->size()<<std::endl            ;
+        std::cout<<"Electron Producer: size of electron without cuts "<< els_h->size()<<std::endl            ;
         
          int nmuons           = 0. ;
          int Number_Muons     = 0. ;
@@ -167,7 +167,7 @@ bool trigwp70 = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGE
          {
          NLooseEle ++ ;
          }
-         cout<<"Loose_electrons_producer: " <<  NLooseEle <<endl;
+         cout<<"Loose_electrons_in_producer: " <<  NLooseEle <<endl;
          //------------------------------------
          
          // bool   MuonCollectionSize  = false                     ;
@@ -240,15 +240,15 @@ bool trigwp70 = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGE
          double ele_pt_new    =  ele -> pt()                                           ;
          //---
          double ElecEnergy    =  ele->energy() ;
-         cout << "Electron_Energy: " << ElecEnergy <<endl;
+         cout << "Elec_Producer ---- Electron_Energy: " << ElecEnergy <<endl;
          //---
          double relIso_elec    = (var0 + NeutralHadIso + photonIso) /ele_pt_new        ;
-         cout<<"Isolation_Before_Electron_Cut_With_No_DeltaRcut: "<<relIso_elec <<endl ;
+         cout<<"Elec_Producer ---- Isolation_Before_Electron_Cut_With_No_DeltaRcut: "<<relIso_elec <<endl ;
          
          H1_ElectronIso ->Fill(relIso_elec)                                            ;
          if(relIso_elec > 0.10)                                      continue          ;//0.2
          
-         cout<<"Isolation_After_Electron_Cut_With_No_DeltaRcut: "<<relIso_elec <<endl  ;
+         cout<<"Elec_Producer ---- Isolation_After_Electron_Cut_With_No_DeltaRcut: "<<relIso_elec <<endl  ;
             H1_ElectronIso_afterCUT ->Fill(relIso_elec);
             
       //-----------------------------------------------------------------------------------------     
@@ -258,9 +258,9 @@ bool trigwp70 = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGE
         // float Elec_HcalSumEt2 =  ele-> dr03HcalDepth2TowerSumEt()         ;
 
          double relIso_elec1 = (Electron_IsopT + Elec_EcalRechit + Elec_HcalSumEt )/ele -> pt() ;
-         cout << "NewIso: "<<relIso_elec1<<endl ;
+         cout << "Elec_Producer ---- NewIso: "<<relIso_elec1<<endl ;
          // if(relIso_elec1 > 0.2) continue     ;
-         cout << "NewIso_after_cut: "<<relIso_elec1<<endl;
+         cout << "Elec_Producer ---- NewIso_after_cut: "<<relIso_elec1<<endl;
       
          double DR_jet_elec = 1000.;
          
@@ -283,19 +283,19 @@ bool trigwp70 = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGE
             double   DEta_jet_elec         =  jets_eta1 - ele->eta()     ;
             double   DPhi_jet_elec         =  jets_phi1 - ele->phi()     ;
             double   JetsEnergy            =  JetsProd->energy()         ;
-            cout << "Jets_Energy: " << JetsEnergy <<endl                 ;
+            cout << "Elec_Producer ---- Jets_Energy: " << JetsEnergy <<endl                 ;
             
             DR_jet_elec                    =  sqrt(( DEta_jet_elec)*(DEta_jet_elec)
                                              +( DPhi_jet_elec)*(DPhi_jet_elec))          ;
                                              
-              cout<<"deltaR_Before_**break**_statement_without_ISO: "<<DR_jet_elec<<endl ;
+              cout<<"Elec_Producer ---- deltaR_Before_**break**_statement_without_ISO: "<<DR_jet_elec<<endl ;
               H_deltaR_jetElec_bforeBREAK ->Fill(DR_jet_elec)                            ;
                
                if(DR_jet_elec < 0.5)
                {
                
-               cout << "Electron_Energy1: " << ElecEnergy <<endl            ;
-               cout << "Jets_Energy1: "     << JetsEnergy <<endl            ;
+               cout << "Elec_Producer ---- Electron_Energy1: " << ElecEnergy <<endl            ;
+               cout << "Elec_Producer ---- Jets_Energy1: "     << JetsEnergy <<endl            ;
                H2_ElescJet_Energy           ->Fill(JetsEnergy,ElecEnergy)   ;
                H2_ElecEta_JetsEta           ->Fill(jets_eta1,elec_eta)      ;
                H2_ElecPhi_JetsPhi           ->Fill(jets_phi1,elec_phi)      ;
@@ -312,7 +312,7 @@ bool trigwp70 = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGE
                if(DR_jet_elec > 0.5) deltaR_grter05_jetElec ->Fill(DR_jet_elec);
                //---------------------            
             // if(DR_jet_elec < 0.5)  continue                              ;  
-            cout<<"After_DR_jet_elec(continue): " << DR_jet_elec <<endl  ;
+            cout<<"Elec_Producer ---- After_DR_jet_elec(continue): " << DR_jet_elec <<endl  ;
             H_deltaR_jetElec_aftrBREAK->Fill(DR_jet_elec)                ;
             //isTight electron
                               
@@ -334,11 +334,11 @@ bool trigwp70 = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGE
         
     }
 
-      std::cout<<"electron size before push_back: "<< electronprod->size()<<std::endl;
+      std::cout<<"Electron_Producer: electron size before push_back: "<< electronprod->size()<<std::endl;
       
       electronprod->push_back(*ele)            ;
       if( electronprod->size()<=0.) continue       ;
-      std::cout<<"electron size after push_back: "<< electronprod->size()<<std::endl;
+      std::cout<<"Electron_Producer: electron size after push_back: "<< electronprod->size()<<std::endl;
       
       
       
@@ -354,7 +354,7 @@ bool trigwp70 = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGE
             if(electronprod->size() >3 )electronCutFlow_producer->Fill(8)       ;
 
             iEvent.put(ptr);
-            std::cout<<"electron registered in this event"<< " size : "<< electronprod->size()<<std::endl;
+            std::cout<<"Electron_Producer: electron registered in this event size : "<< electronprod->size() << std::endl;
 
 }
 

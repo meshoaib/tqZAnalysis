@@ -51,7 +51,7 @@ TbzLoseMuonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
      // pick the first (i.e. highest sum pt) vertex                     
      if (!vertices.isValid())
       {
-       std::cout<<"Didja hear the one about the empty vertex collection?\n"   ;
+       std::cout<<"LooseMuon_Didja hear the one about the empty vertex collection?\n"   ;
        iEvent.put(ptr)                                                        ;
        return                                                                 ;
       }
@@ -147,7 +147,7 @@ TbzLoseMuonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        for(reco::MuonCollection::const_iterator muon  = myMuon_new.begin()
                                                ;muon != myMuon_new.end(); ++muon)
        {
-       cout <<"FirstMuon@@@@@@@@@@@@@@@@@@@@@"<<endl         ; 
+       cout <<"First_Loose_Muon_@@@@@@@@@@@@@@@@@@@@@"<<endl         ; 
        edm::Ptr<reco::Muon> myMuon(&myMuon_new,tt)           ;
        
        // bool isTightMuon   =   false                          ;
@@ -163,15 +163,15 @@ TbzLoseMuonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        // Proposed Configuration (DeltaBeta Correction) at cone of 0.4: 
        Iso = (ChargedHadronPt +  max(0. , sumNeutralHadronEt + sumPhotonEt - 0.5*sumPUPt))/myMuon->pt()  ; 
        
-       cout<< "Muon_Isolation: "<< Iso <<endl   ;
+       cout<< "Loose_Muon_Isolation: "<< Iso <<endl   ;
        if(Iso > 0.12) continue                  ;
-       cout<<"Muon_Isolation1: "<< Iso <<endl   ;
+       cout<<"Loose_Muon_Isolation1: "<< Iso <<endl   ;
        
        // isTightMuon        =   tbzHelper.isTightMuon (  myMuon,  theVertex )            ;
        isLooseMuon        =   tbzHelper.isLooseMuon (  myMuon,  theVertex )            ; 
        
        if( nmu == 0 && muon->pt() > 20.) passLeadingPt = true                          ;
-       cout << "Leading Muon True: " << passLeadingPt<<endl                            ;
+       cout << "Leading_Loose_Muon_True: " << passLeadingPt<<endl                            ;
        
        if( nmu == 0 && passLeadingPt ) pT_1st_LeadingMuon->Fill(muon->pt())            ;
        if( nmu == 1 && muon->pt()>= muonPtCut_ ) pT_2nd_LeadingMuon->Fill(muon->pt())  ;
@@ -234,7 +234,7 @@ TbzLoseMuonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
              
              //--- number of tight muons ------
              nmu++                                                     ;       
-             cout <<"numberMuon: " << nmu << endl                      ;
+             cout <<"number_Loose_Muon: " << nmu << endl                      ;
              Number_of_LoseMuons->Fill(nmu)                            ; // Define hist
              // //--------------------------------
              
@@ -257,7 +257,7 @@ TbzLoseMuonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        if(losemu->size() >3 )Lose_muonCutFlow->Fill(10)                  ; 
        
        //==========================================================
-       cout<<"size of selected muons : "<<losemu->size()<<endl        ;
+       cout<<"size of selected Loose_muons : "<<losemu->size()<<endl        ;
        iEvent.put(ptr)                                                ;
        //==========================================================
 }
