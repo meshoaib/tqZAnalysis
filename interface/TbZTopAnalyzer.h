@@ -172,6 +172,9 @@ class TbZTopAnalyzer : public edm::EDAnalyzer {
    edm::InputTag               bjetInputTag_         ;
    edm::InputTag               metInputTag_          ;
    edm::InputTag               muonTag_              ;
+   // -------- 021014 -------------------------------
+	 edm::InputTag vertexSrc_ ;
+   // -----------------------------------------------
    double metPtCut_                                  ;
    double BtagPtCut_                                 ;
    double BtagEtaCut_                                ;
@@ -195,7 +198,7 @@ class TbZTopAnalyzer : public edm::EDAnalyzer {
    edm::InputTag               rhoIsoInputTag          ;
    edm::InputTag               primaryVertexInputTag_  ;
    std::vector<edm::InputTag>  isoValInputTags_        ;
-   edm::InputTag               vertexSrc_              ;
+  // edm::InputTag               vertexSrc_              ;
   //----------
   
   //histograms declaration here...
@@ -598,15 +601,19 @@ TH1D*  H1_jetsPhi_is1muon2elec  ;
 TH1D*  H1_jetsEta_is1muon2elec  ;
 TH1D*  H1_jetsPt_is1muon2elec   ;
 //----09-09-14-------------------
-TH1D* TNPUTrue_ ;
-TH1D* TNPUInTime_  ;
-TH1D* TNVTX_ ;
-TH1D*  RWTTrue_ ;
-TH1D*   RWTInTime_ ;
-TH1D* WGT_  ;
-TH1D* WeightVsNint_ ;
+
+TH1D* TNPUTrue_                 ;
+TH1D* TNPUInTime_               ;
+TH1D* TNVTX_                    ;
+
+
+TH1D*  RWTTrue_                 ;
+TH1D*  RWTInTime_               ;
+TH1D*  WGT_                     ;
+TH1D*  WeightVsNint_            ;
 
 
 //----------------------
+TH1D* H1_ElecPtrSize;
     };
     
