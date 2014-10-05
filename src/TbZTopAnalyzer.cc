@@ -7,6 +7,7 @@
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 //------250814----
 #include "PhysicsTools/Examples/interface/CMSDAS_PileupReweight.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 //------------
 typedef std::vector< edm::Handle< edm::ValueMap<reco::IsoDeposit> > >   IsoDepositMaps    ;
 typedef std::vector< edm::Handle< edm::ValueMap<double> > >             IsoDepositVals    ;
@@ -28,7 +29,7 @@ TbZTopAnalyzer::TbZTopAnalyzer(const edm::ParameterSet& iConfig):m_triggerCache(
                                           ,m_triggerSelector( triggerExpression::parse( iConfig.getParameter<std::string>("MutriggerSelection") ) )    
                                           ,m_triggerSelector1( triggerExpression::parse( iConfig.getParameter<std::string>("EtriggerSelection") ) )
                                           ,m_triggerSelector2( triggerExpression::parse( iConfig.getParameter<std::string>("MuEGtriggerSelection") ) )
-//       				          ,vertexSrc_(iConfig.getParameter<edm::InputTag>("vertexSrc"))						                                          
+   //    				          ,vertexSrc_(iConfig.getParameter<edm::InputTag>("vertexSrc"))						                                          
 //EtriggerSelection
 //TbZTopAnalyzer::TbZTopAnalyzer(const edm::ParameterSet& iConfig):m_triggerCache(iConfig.getParameterSet("triggerConfiguration") )
   //                                                         ,m_triggerSelector( triggerExpression::parse( iConfig.getParameter<std::string>("MutriggerSelection") ) )
@@ -56,7 +57,7 @@ TbZTopAnalyzer::TbZTopAnalyzer(const edm::ParameterSet& iConfig):m_triggerCache(
    //------------------------------------------------------------------------------------------------
    // rho_ = iConfig.getParameter<edm::InputTag> ("rho");
    //------------------------------------------------------------------------------------------------
-  //  doPileup_	 = iConfig.getParameter<bool>("doPileup")               ;
+    doPileup_	 = iConfig.getParameter<bool>("doPileup")               ;
    //------------------------------------------------------------------------------------------------
     conversionsInputTag_    = iConfig.getParameter<edm::InputTag>("conversionsInputTag")            ;
     beamSpotInputTag_       = iConfig.getParameter<edm::InputTag>("beamSpotInputTag")               ;
@@ -68,19 +69,20 @@ TbZTopAnalyzer::TbZTopAnalyzer(const edm::ParameterSet& iConfig):m_triggerCache(
 
      //realdata_               = iConfig.getParameter<bool>("realdata")                                ;
     
-    //-----   240814---
-   // vertexSrc_              = iConfig.getParameter<edm::InputTag>("vertexSrc");
+    //----- 021014 -------------------------------------------------------------------
+    vertexSrc_              = iConfig.getParameter<edm::InputTag>("vertexSrc");
+   // --------------------------------------------------------------------------------
 
-//if( doPileup_)
-//{
+if( doPileup_)
+{
 
-  // LumiWeights_ = edm::LumiReWeighting(
-    //                                   "WZ_MC.root",
-      //                                 "data250814.root",
-        //                               "topAna/TNPUTrue",
-          //                             "pileup");
+   LumiWeights_ = edm::LumiReWeighting(
+                                       "WZ_MC.root",
+                                       "dataPileup_Histo.root",
+                                       "topAna/TNPUTrue",
+                                       "pileup");
                                        
-//}// end of doPileup 
+}// end of doPileup 
 
  }
 
@@ -181,46 +183,66 @@ TbZTopAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
  //-------------------------------------------------------------------------
 
-if (tqZMuEG == true && tqZDoublMu == false && tqZDoublEE == false)
+//if (tqZMuEG == true && tqZDoublMu == false && tqZDoublEE == false)
 //if(tqZDoublEE == true && tqZDoublMu == false)
 //if( tqZDoublMu == true && tqZDoublEE == false) 
-{
+//{
 
 	NEvents++                           ;
 	H1_NEvents        ->Fill( NEvents)  ;
 	m_muonCutFlow     ->Fill(1)         ; // Events after trigger.
+
 // --flag for pileup ----
-//	float npT=-1.   ;
-//	float npIT=-1.  ;
 
-//if( doPileup_)
-//{
-//	edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-//	iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
-//	std::vector<PileupSummaryInfo>::const_iterator PVI;
+	float npT=-1.   ;
+	float npIT=-1.  ;
 
-//	for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI)
-//   	{
-//	int BX = PVI->getBunchCrossing();
-//	if(BX == 0) {
-//	npT = PVI->getTrueNumInteractions();
-//	npIT = PVI->getPU_NumInteractions();
-//		     }
-//	}
+if( doPileup_)
+{
+	edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+	iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+	std::vector<PileupSummaryInfo>::const_iterator PVI;
+	
+	//float npT=-1.   ;
+	//float npIT=-1.  ;
 
-//} //---end of flag for pileup ---------
+	for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI)
+   	{
+	int BX = PVI->getBunchCrossing();
+	// "0" is the in-time crossing, negative values are the early crossings, positive are late
+	if(BX == 0) {
+	npT = PVI->getTrueNumInteractions();
+	npIT = PVI->getPU_NumInteractions();
+		     }
+	}
+	TNPUTrue_->Fill(npT)    ;
+        TNPUInTime_->Fill(npIT) ;
 
-// double MyWeight = LumiWeights_.weight( npT );
+} //---end of flag for pileup ---------
 
-double MyWeight = 1; 
-
-// TNPUTrue_->Fill(npT);
- //TNPUInTime_->Fill(npIT);
+	//TNPUTrue_->Fill(npT)    ;
+	//TNPUInTime_->Fill(npIT) ;
+//----------- reWeight----------------------------------------
+	//double MyWeight = LumiWeights_.weight( npT );
+	//cout<<"MyWeight for rewighting:  "<<MyWeight <<endl;
+//------------------------------------------------------------
+	double MyWeight; 
+if( doPileup_)
+	{
+	double MyWeight = LumiWeights_.weight( npT );
+	cout<<"MyWeight for rewighting:  "<<MyWeight <<endl;
+	}
+else
+	{
+	double MyWeight = 1;
+	cout<<"MyWeight for No rewighting:  "<<MyWeight <<endl;
+	}
 
 //  WeightVsNint_->Fill(npT,MyWeight);
-//  WGT_->Fill(MyWeight);
-//  RWTTrue_->Fill(npT, MyWeight);
-//  RWTInTime_->Fill(npIT, MyWeight);
+
+  WGT_->Fill(MyWeight);
+  RWTTrue_->Fill(npT, MyWeight);
+  RWTInTime_->Fill(npIT, MyWeight);
 
 // edm::Handle< std::vector<reco::Vertex> > vertices_h;
  // iEvent.getByLabel(vertexSrc_, vertices_h);
@@ -365,13 +387,25 @@ double MyWeight = 1;
     Handle< std::vector<reco::Vertex> > NEWvertices                            ;
     iEvent.getByLabel("offlinePrimaryVertices", NEWvertices)                   ;
 
-    if (!NEWvertices.isValid()) return                                         ;       
+    if (!NEWvertices.isValid())                                               
+{
+    std::cout<<"Hello hear the one about the empty vertex collection?\n";
+    return;
+  }  
     // require in the event that there is at least one reconstructed vertex
    if(NEWvertices->size()<=0) return                                           ;
-  vector<reco::Vertex>::const_iterator itv                                    ;
-  
-  
-   int NVtx_old = 0                                                            ;
+
+	// pick the first (i.e. highest sum pt) vertex
+	const reco::Vertex* theVertex=&(NEWvertices ->front());
+	// require that the vertex meets certain criteria
+	
+	if(theVertex->ndof()<5) return;
+	if(fabs(theVertex->z())>24.0) return;
+	if(fabs(theVertex->position().rho())>2.0) return;
+
+	vector<reco::Vertex>::const_iterator itv                               ;
+    
+	int NVtx_old = 0                                                       ;
    // now, count vertices
    for (itv = NEWvertices->begin(); itv != NEWvertices->end(); ++itv)
    {      
@@ -381,14 +415,15 @@ double MyWeight = 1;
       ++NVtx_old                                                                  ;
    }
 
-      Number_PrimaryVertex->Fill(NVtx_old)                ;
-      //Number_PrimaryVertex ->Fill(NVtx_old,MyWeight)      ;
+      //Number_PrimaryVertex->Fill(NVtx_old)              ;
+      Number_PrimaryVertex ->Fill(NVtx_old,MyWeight)      ;
+      TNVTX_->Fill(float(NVtx_old) -1, MyWeight)          ; 
+      if(NVtx_old < 1) return                             ;
    
-      if(NVtx_old < 1) return                            ;
-   
-   m_muonCutFlow     ->Fill(2)            ; // Events after primary vertex cut     
+   m_muonCutFlow     ->Fill(2)                            ; // Events after primary vertex cut     
   
-   //---------------------- 3 tight leptons ---------------------------
+   
+//---------------------- 3 tight leptons ---------------------------
     if(nleptons == 3 && nleptons != 4 )   
    {
 
@@ -2263,7 +2298,7 @@ double MyWeight = 1;
        
    }// end of 3 tight leptons loop  
    
- }//trigger "if" ends here
+// }//trigger "if" ends here
     //////////////////////////////////////////////////////////////////////
     cout<<"\n";
     cout<<"----------------END OF THE EVENT---------------"<<"\n"<<endl;
@@ -2597,7 +2632,7 @@ TbZTopAnalyzer::beginJob()
   H1_Elec_Eta_New = fs1->make<TH1D>("Elec_Eta","Elec_Eta",60, -3., 3.)        ;
   H1_Elec_Phi_New = fs1->make<TH1D>("Elec_Phi_New","Elec_Phi_New",60, -3., 3.);
   //===============
-  Number_PrimaryVertex  = fs1->make<TH1D>("Number_PrimaryVertex","Number_PrimaryVertex",40, 0., 40.);
+  Number_PrimaryVertex  = fs1->make<TH1D>("Number_PrimaryVertex","Number_PrimaryVertex",60, 0., 60.);
   //----
   Number_tightMuons_Anlyzr = fs1->make<TH1D> ("Number_tightMuons_Anlyzr","Number_tightMuons_Anlyzr",10,0,10);
   //-----------------------------------------------------------
