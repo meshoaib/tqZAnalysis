@@ -216,7 +216,7 @@ bool trigwp70 = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGE
          double iso = (iso_n + iso_ch) / elec_pt            ;
          //if (iso > 2.0) continue;                         
          Electron_ISO->Fill(iso)                            ;  // filling histogram before applying isolation cut on electrons 
-         if (iso > 2.0) continue                            ; // Isolation cut applied here
+         if (iso > 0.1) continue                            ; // Isolation cut applied here//before 2.0
          
        //-----------------------------------------------------------------------------  
        
@@ -246,7 +246,7 @@ bool trigwp70 = EgammaCutBasedEleId::PassTriggerCuts(EgammaCutBasedEleId::TRIGGE
          cout<<"Elec_Producer ---- Isolation_Before_Electron_Cut_With_No_DeltaRcut: "<<relIso_elec <<endl ;
          
          H1_ElectronIso ->Fill(relIso_elec)                                            ;
-         if(relIso_elec > 0.10)                                      continue          ;//0.2
+    //     if(relIso_elec > 0.10)                                      continue          ;//0.2
          
          cout<<"Elec_Producer ---- Isolation_After_Electron_Cut_With_No_DeltaRcut: "<<relIso_elec <<endl  ;
             H1_ElectronIso_afterCUT ->Fill(relIso_elec);

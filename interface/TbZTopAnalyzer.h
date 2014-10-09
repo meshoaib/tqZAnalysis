@@ -187,11 +187,13 @@ class TbZTopAnalyzer : public edm::EDAnalyzer {
    double ElecPtCut_                                 ;
    bool   doTruthMatch_                              ;
    //----apply trigger
-  // bool applyTrigger_                                ;
+  // bool applyTrigger_                              ;
+
    //-----
-   bool realdata_ ;
-   bool doPileup_ ;
+   bool realdata_        ;
+   bool doPileup_        ;
    //-----
+
    // edm::InputTag rho_ ;
    edm::InputTag               conversionsInputTag_    ;
    edm::InputTag               beamSpotInputTag_       ;

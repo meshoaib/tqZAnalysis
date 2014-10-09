@@ -171,7 +171,7 @@ TbzMuonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        sumPUPt            =   myMuon->pfIsolationR04().sumPUPt                                           ;
 
        // Proposed Configuration (DeltaBeta Correction) at cone of 0.4: 
-       Iso = (ChargedHadronPt +  max(0. , sumNeutralHadronEt + sumPhotonEt - 0.5*sumPUPt))/myMuon->pt()  ; 
+       Iso = (ChargedHadronPt +  max(0. , sumNeutralHadronEt + sumPhotonEt - 0.5*sumPUPt))/myMuon->pt()  ; //delta beta
        
        cout<< "tight_Muon_Isolation: "<< Iso <<endl     ;
        if(Iso > 0.12) continue                    ;

@@ -57,7 +57,7 @@ TbZTopAnalyzer::TbZTopAnalyzer(const edm::ParameterSet& iConfig):m_triggerCache(
    //------------------------------------------------------------------------------------------------
    // rho_ = iConfig.getParameter<edm::InputTag> ("rho");
    //------------------------------------------------------------------------------------------------
-    doPileup_	 = iConfig.getParameter<bool>("doPileup")               ;
+    doPileup_	    = iConfig.getParameter<bool>("doPileup")               ;
    //------------------------------------------------------------------------------------------------
     conversionsInputTag_    = iConfig.getParameter<edm::InputTag>("conversionsInputTag")            ;
     beamSpotInputTag_       = iConfig.getParameter<edm::InputTag>("beamSpotInputTag")               ;
@@ -113,6 +113,7 @@ TbZTopAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // All Events
      m_muonCutFlow     ->Fill(0)            ; 
    //--- bool for combinations---------------
+   double MyWeight = 0.;
    bool is3elec      = false    ;
    bool is3muon      = false    ;
    bool is2elec1muon = false    ;
@@ -184,9 +185,9 @@ TbZTopAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
  //-------------------------------------------------------------------------
 
 //if (tqZMuEG == true && tqZDoublMu == false && tqZDoublEE == false)
-//if(tqZDoublEE == true && tqZDoublMu == false)
+if(tqZDoublEE == true && tqZDoublMu == false)
 //if( tqZDoublMu == true && tqZDoublEE == false) 
-//{
+{
 
 	NEvents++                           ;
 	H1_NEvents        ->Fill( NEvents)  ;
@@ -226,15 +227,15 @@ if( doPileup_)
 	//double MyWeight = LumiWeights_.weight( npT );
 	//cout<<"MyWeight for rewighting:  "<<MyWeight <<endl;
 //------------------------------------------------------------
-	double MyWeight; 
+//	double MyWeight; 
 if( doPileup_)
 	{
-	double MyWeight = LumiWeights_.weight( npT );
+	MyWeight = LumiWeights_.weight( npT );
 	cout<<"MyWeight for rewighting:  "<<MyWeight <<endl;
 	}
 else
 	{
-	double MyWeight = 1;
+	MyWeight = 1;
 	cout<<"MyWeight for No rewighting:  "<<MyWeight <<endl;
 	}
 
@@ -388,23 +389,31 @@ else
     iEvent.getByLabel("offlinePrimaryVertices", NEWvertices)                   ;
 
     if (!NEWvertices.isValid())                                               
-{
+
+  	{
     std::cout<<"Hello hear the one about the empty vertex collection?\n";
     return;
-  }  
+  	}
+  
     // require in the event that there is at least one reconstructed vertex
    if(NEWvertices->size()<=0) return                                           ;
 
 	// pick the first (i.e. highest sum pt) vertex
 	const reco::Vertex* theVertex=&(NEWvertices ->front());
 	// require that the vertex meets certain criteria
+
+//	cout<<"theVertex->ndof(): "<<theVertex->ndof() <<endl;
+//	cout<<"theVertex->z(): "<<theVertex->z() <<endl;
+//	cout <<"theVertex->position().rho(): "<<theVertex->position().rho()<<endl;
+
 	
-	if(theVertex->ndof()<5) return;
-	if(fabs(theVertex->z())>24.0) return;
-	if(fabs(theVertex->position().rho())>2.0) return;
+	if(theVertex->ndof()<5) return                                         ;
+	if(fabs(theVertex->z())>24.0) return                                   ;
+	if(fabs(theVertex->position().rho())>2.0) return                       ;
 
 	vector<reco::Vertex>::const_iterator itv                               ;
-    
+// 	cout<<"theVertex->ndof(): "<<theVertex->ndof() <<endl;
+   
 	int NVtx_old = 0                                                       ;
    // now, count vertices
    for (itv = NEWvertices->begin(); itv != NEWvertices->end(); ++itv)
@@ -412,15 +421,25 @@ else
       if(itv->ndof()< 4)                   continue                           ;
       if(fabs(itv->z())> 24.0)             continue                           ;
       if(fabs(itv->position().rho())>2.0) continue                            ;      
-      ++NVtx_old                                                                  ;
+      ++NVtx_old                                                              ;
    }
 
       //Number_PrimaryVertex->Fill(NVtx_old)              ;
-      Number_PrimaryVertex ->Fill(NVtx_old,MyWeight)      ;
+	cout<<"Wight before primary vertex Fill: "<<MyWeight<<endl;
+      Number_PrimaryVertex ->Fill(NVtx_old, MyWeight)      ;
       TNVTX_->Fill(float(NVtx_old) -1, MyWeight)          ; 
+
+	//Number_PrimaryVertex ->Fill(NVtx_old)      ;
+        //TNVTX_->Fill(float(NVtx_old))          ;
+
       if(NVtx_old < 1) return                             ;
-   
-   m_muonCutFlow     ->Fill(2)                            ; // Events after primary vertex cut     
+
+
+	cout<<"theVertex->ndof(): "<<theVertex->ndof() <<endl;
+        cout<<"theVertex->z(): "<<theVertex->z() <<endl;
+        cout <<"theVertex->position().rho(): "<<theVertex->position().rho()<<endl;
+
+        m_muonCutFlow     ->Fill(2)                         ; // Events after primary vertex cut     
   
    
 //---------------------- 3 tight leptons ---------------------------
@@ -469,7 +488,11 @@ else
        }//for-loop btag
        
     cout << "BTags_in_an_Event" << nbtagjets <<endl                    ;
+
+    if ( nbtagjets > 0)
     bjet_mult->Fill(nbtagjets,MyWeight)                                ;    
+   // bjet_mult->Fill(nbtagjets)                                ;	
+ 
    //==========================================================                                                                               
     // cout<<"(Top Analyzer) btag jet pt : "<<tbz_bjet.Pt()                          ;
     // cout<<" bjet size : "<< bTags.size()<< " # tagged jets : "<< nbtagjets<<endl  ;       
@@ -2298,7 +2321,7 @@ else
        
    }// end of 3 tight leptons loop  
    
-// }//trigger "if" ends here
+ }//trigger "if" ends here
     //////////////////////////////////////////////////////////////////////
     cout<<"\n";
     cout<<"----------------END OF THE EVENT---------------"<<"\n"<<endl;
