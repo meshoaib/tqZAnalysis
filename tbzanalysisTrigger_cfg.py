@@ -4,13 +4,17 @@ process = cms.Process("DEMO")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load('RecoBTag/Configuration/RecoBTag_cff')
+process.load("Configuration.StandardSequences.Services_cff")
+process.load('Configuration.Geometry.GeometryIdeal_cff')
+process.load('Configuration/StandardSequences/MagneticField_38T_cff')
 #JetMETCorrections
-process.load("JetMETCorrections.Type1MET.caloMETCorrections_cff")
-process.load("JetMETCorrections.Type1MET.correctionTermsCaloMet_cff")
-process.load("JetMETCorrections.Type1MET.correctionTermsPfMetType0PFCandidate_cff")
-process.load("JetMETCorrections.Type1MET.correctionTermsPfMetType0RecoTrack_cff")
-process.load("JetMETCorrections.Type1MET.correctionTermsPfMetShiftXY_cff")
-process.load("JetMETCorrections.Type1MET.correctedMet_cff")
+#process.load("RecoMET.METFilters.metFilters_cff")
+#process.load("JetMETCorrections.Type1MET.caloMETCorrections_cff")
+#process.load("JetMETCorrections.Type1MET.correctionTermsCaloMet_cff")
+#process.load("JetMETCorrections.Type1MET.correctionTermsPfMetType0PFCandidate_cff")
+#process.load("JetMETCorrections.Type1MET.correctionTermsPfMetType0RecoTrack_cff")
+#process.load("JetMETCorrections.Type1MET.correctionTermsPfMetShiftXY_cff")
+#process.load("JetMETCorrections.Type1MET.correctedMet_cff")
 
 #---------12-05-14-------
 #process.load("CommonTools.ParticleFlow.pfIsolation_cfg")
@@ -18,26 +22,6 @@ process.load("JetMETCorrections.Type1MET.correctedMet_cff")
 #process.load("Configuration.StandardSequences.Services_cff")
 #process.load('Configuration.Geometry.GeometryIdeal_cff')
 #process.load('Configuration/StandardSequences/MagneticField_38T_cff')
-#process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff') Configuration.Geometry.GeometryIdeal_cff
-#process.load("Configuration.StandardSequences.Reconstruction_cff")
-# HLT bit HLT_L1_BscMinBiasOR_BptxPlusORMinus
-
-#/////////////////////////////////////////////////////////////////////
-#process.load('HLTrigger/HLTfilters/hltHighLevel_cfi')
-#process.hltHighLevel.HLTPaths = cms.vstring('HLT_L1_BscMinBiasOR_BptxPlusORMinus')
-#triggername = "HLT_IsoMu24_eta2p1_v
-
-#DoubleElectron
-#HLT Ele17 CaloIdT CaloIsoVL TrkIdVL TrkIsoVL Ele8 CaloIdT CaloIsoVL TrkIdVL TrkIsoVL
-
-#DoubleMu
-#HLT_Mu17_Mu8
-#HLT_Mu17_TkMu8
-
-#MuEG
-#HLT Mu17 Ele8 CaloIdT CaloIsoVL TrkIdVL TrkIsoVL
-#HLT Mu8 Ele17 CaloIdT CaloIsoVL TrkIdVL TrkIsoVL
-#////////////////////////////////////////////////////////////////////////
 
 ########################################
 # Summer12 with CMSSW_5_3_X and GT START53_V7A
@@ -73,7 +57,7 @@ process.source = cms.Source("PoolSource",
    'file:/afs/cern.ch/work/m/meshoaib/analysis/CMSSW_5_3_15/src/MyAnalysis/TbZ/A27919CE-486A-E311-8EDD-002590D0B0C8.root'
 
    #2012_EE
-    #'file:/afs/cern.ch/work/m/meshoaib/analysis/CMSSW_5_3_15/src/MyAnalysis/TbZ/58C97ECA-45DA-E111-B7B9-008CFA001B18.root' 
+   # 'file:/afs/cern.ch/work/m/meshoaib/analysis/CMSSW_5_3_15/src/MyAnalysis/TbZ/58C97ECA-45DA-E111-B7B9-008CFA001B18.root' 
     #'file:/afs/cern.ch/work/m/meshoaib/analysis/CMSSW_5_3_15/src/MyAnalysis/TbZ/90985F3F-11DA-E111-8278-848F69FD294F.root'
 
     #2012_DataSet
@@ -124,14 +108,6 @@ process.myJetProdLabel = cms.EDProducer('JetProducer',
                                          JetsPtCut  = cms.double(30.), #as suggested by jets contact person
                                          JetsEtaCut = cms.double(3.0)
                                         )
-#process.selectedMuonsGenParticlesMatch = cms.EDProducer( "MCTruthDeltaRMatcher",
- #                                             src = cms.InputTag("TbzMuonProducer"),
- #                                             matched = cms.InputTag("genParticleCandidates"),
- #                                             distMin = cms.double(0.15),
- #                                             matchPDGId = cms.vint32(13)
- #                                             )
-# rho value for isolation FastjetJetProducer::kt6PFJetsForIsolation
-#
 
 from RecoJets.JetProducers.kt4PFJets_cfi import *
 process.kt6PFJetsForIsolation = kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
@@ -141,8 +117,13 @@ process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 #
 
 from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons')
-process.pfiso = cms.Sequence(process.pfParticleSelectionSequence + process.eleIsoSequence)
+
+process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons') 
+print "NewIsolation"
+#process.tightElecSequence = setupPFElectronIso(process, 'gsfElectrons')
+process.pfiso = cms.Sequence(process.pfParticleSelectionSequence + process.eleIsoSequence )
+#process.Newpfiso = cms.Sequence(process.tightElecSequence )
+
 #
 process.myElectronProdLabel = cms.EDProducer('ElectronProducer'  ,
             electronsInputTag = cms.InputTag("gsfElectrons")     ,
@@ -151,43 +132,25 @@ process.myElectronProdLabel = cms.EDProducer('ElectronProducer'  ,
             beamSpotInputTag  = cms.InputTag("offlineBeamSpot")  ,
             rhoIsoInputTag   = cms.InputTag("kt6PFJetsForIsolation","rho"),
             primaryVertexInputTag = cms.InputTag("offlinePrimaryVertices"),
+
             isoValInputTags =  cms.VInputTag(cms.InputTag('elPFIsoValueCharged03PFIdPFIso'),
-                                                                 cms.InputTag('elPFIsoValueGamma03PFIdPFIso'),
-                                                                 cms.InputTag('elPFIsoValueNeutral03PFIdPFIso')),	
+                                             cms.InputTag('elPFIsoValueGamma03PFIdPFIso'),
+                                              cms.InputTag('elPFIsoValueNeutral03PFIdPFIso')),	
+
                                              electronPtCut = cms.double(20.),
                                              electronEtaCut = cms.double(2.1),
                                              printDebug              = cms.bool(True)
 )
+
 print "after" 
-
-#process.demo = cms.EDAnalyzer('TBZAnalysis',
-#triggerSelection = cms.string('HLT_Mu17_Mu8_v* OR HLT_IsoMu24_eta2p1_v*'),
-#triggerConfiguration =  cms.PSet(
-  #hltResults = cms.InputTag('TriggerResults','','HLT'),
-  #l1tResults = cms.InputTag(''),
-  #daqPartitions = cms.uint32(1),
- # l1tIgnoreMask = cms.bool( False ),
-#  l1techIgnorePrescales = cms.bool( False ),
-#  throw  = cms.bool( True )
-#)
-#)
-
-#process.Z2mumu = cms.EDAnalyzer('Z2mumu')
-#process.Z2ep   = cms.EDAnalyzer('Z2ep')
-#process.Acceptance  = cms.EDAnalyzer('tbz_Acceptance')
-#process.topFromWb = cms.EDAnalyzer('t2Wb')
-#process.tbZ = cms.EDAnalyzer('tbZ_Final')
-####top analyzer#####
+print "NewIsolation"
+from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
+#process.tightElecSequence = setupPFElectronIso(process, 'gsfElectrons')
+process.tightElecSequence = setupPFElectronIso(process, 'myElectronProdLabel')
+process.Newpfiso = cms.Sequence(process.tightElecSequence )
+print "After New ISolation"
+#process.metFilters
 process.topAna = cms.EDAnalyzer('TbZTopAnalyzer',
-
-#MutriggerSelection   = cms.string('HLT_Mu17_Mu8_* OR HLT_Mu17_TkMu8_* AND !( HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_*)'),
-#MutriggerSelection   = cms.string('(HLT_Mu17_Mu8_*)'),
-#MutriggerSelection   = cms.string('(HLT_Mu17_Mu8_* OR HLT_Mu17_TkMu8_* )'),
-#MutriggerSelection   = cms.string('( HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_* )'),
-#MutriggerSelection = cms.string('(HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_* OR HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_*)'),
-#EtriggerSelection    = cms.string('(HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_*)'),
-# HLT_Mu17_Mu8_v16
-# HLT_Mu17_TkMu8_v9
 
 MutriggerSelection   = cms.string('(HLT_Mu17_Mu8_* OR HLT_Mu17_TkMu8_*)'),
 MuEGtriggerSelection = cms.string('(HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_* OR HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_*)'),
@@ -212,8 +175,12 @@ triggerConfiguration =  cms.PSet(
                                 conversionsInputTag   = cms.InputTag("allConversions")                             ,
                                 beamSpotInputTag      = cms.InputTag("offlineBeamSpot")                            ,
                                 rhoIsoInputTag        = cms.InputTag("kt6PFJetsForIsolation","rho")                ,
+
+				#rhoIsoInputTagAna  = cms.InputTag("kt6PFJetsForIsolation","rho")                   ,
+
                                 primaryVertexInputTag = cms.InputTag("offlinePrimaryVertices")                     ,
-                                isoValInputTags =  cms.VInputTag(cms.InputTag('elPFIsoValueCharged03PFIdPFIso')    ,
+                               
+				NewisoValInputTags =  cms.VInputTag(cms.InputTag('elPFIsoValueCharged03PFIdPFIso') ,
                                					 cms.InputTag('elPFIsoValueGamma03PFIdPFIso')      ,
             					                 cms.InputTag('elPFIsoValueNeutral03PFIdPFIso'))   ,                               
                                 
@@ -229,17 +196,20 @@ triggerConfiguration =  cms.PSet(
                                 JetsPtCut     = cms.double(20.)                                    ,
                                 ElecPtCut     = cms.double(20.)                                    ,
                                 doTruthMatch  = cms.bool(False)                                    ,
+				electronPtCut = cms.double(20.)                                    ,
+                                electronEtaCut = cms.double(2.1)                                   ,
+
                                 #realdata      = cms.bool(True)                                    ,
 				realdata      = cms.bool(False)                                    ,
-				doPileup     = cms.bool(True)                                     ,	
+				doPileup      = cms.bool(False)                                    ,	
                                 printDebug    = cms.bool(True)
 
                               )
 print "after 1" 
 process.dump=cms.EDAnalyzer('EventContentAnalyzer')
 print "after 2" 
-#process.p = cms.Path(process.myProducerLabel*process.demo*process.dump )
-#process.p = cms.Path(process.myProducerLabel*process.myJetProdLabel*process.kt6PFJetsForIsolation*process.pfiso*process.myElectronProdLabel*process.Z2mumu*process.Z2ep*process.Acceptance*process.topAna)
-process.p = cms.Path(process.myProducerLabel*process.myLoseMuons*process.myJetProdLabel*process.kt6PFJetsForIsolation*process.pfiso*process.myElectronProdLabel*process.topAna)
-#process.p = cms.Path(process.myProducerLabel*process.myJetProdLabel*process.kt6PFJetsForIsolation*process.pfiso*process.myElectronProdLabel*process.Z2mumu*process.Z2ep*process.topAna)
+
+process.p = cms.Path(process.myProducerLabel*process.myLoseMuons*process.myJetProdLabel*process.kt6PFJetsForIsolation*process.pfiso*process.myElectronProdLabel*process.Newpfiso*process.topAna)
+
+
 print "after 3" 
