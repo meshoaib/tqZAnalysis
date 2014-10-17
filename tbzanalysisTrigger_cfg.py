@@ -19,9 +19,6 @@ process.load('Configuration/StandardSequences/MagneticField_38T_cff')
 #---------12-05-14-------
 #process.load("CommonTools.ParticleFlow.pfIsolation_cfg")
 #from CommonTools.ParticleFlow import pfIsolation_cfg
-#process.load("Configuration.StandardSequences.Services_cff")
-#process.load('Configuration.Geometry.GeometryIdeal_cff')
-#process.load('Configuration/StandardSequences/MagneticField_38T_cff')
 
 ########################################
 # Summer12 with CMSSW_5_3_X and GT START53_V7A
@@ -119,12 +116,11 @@ process.kt6PFJetsForIsolation.Rho_EtaMax = cms.double(2.5)
 from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
 
 process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons') 
-print "NewIsolation"
+#print "NewIsolation"
 #process.tightElecSequence = setupPFElectronIso(process, 'gsfElectrons')
 process.pfiso = cms.Sequence(process.pfParticleSelectionSequence + process.eleIsoSequence )
 #process.Newpfiso = cms.Sequence(process.tightElecSequence )
 
-#
 process.myElectronProdLabel = cms.EDProducer('ElectronProducer'  ,
             electronsInputTag = cms.InputTag("gsfElectrons")     ,
             muonsInputTag = cms.InputTag("myLoseMuons")      ,
@@ -143,12 +139,20 @@ process.myElectronProdLabel = cms.EDProducer('ElectronProducer'  ,
 )
 
 print "after" 
+
+
 print "NewIsolation"
-from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-#process.tightElecSequence = setupPFElectronIso(process, 'gsfElectrons')
-process.tightElecSequence = setupPFElectronIso(process, 'myElectronProdLabel')
+
+#from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
+#process.tightElecSequence = setupPFElectronIso(process, 'gsfElectrons') # reco::GsfElectron
+#print "Hello Iso"
+process.tightElecSequence = setupPFElectronIso(process, 'myElectronProdLabel') #electronprod
+print "Hello Iso"
 process.Newpfiso = cms.Sequence(process.tightElecSequence )
+
 print "After New ISolation"
+
+
 #process.metFilters
 process.topAna = cms.EDAnalyzer('TbZTopAnalyzer',
 
